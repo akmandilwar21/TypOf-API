@@ -113,4 +113,84 @@ class AddressController extends Controller
             return $e->getMessage();
         }
     }
+
+    /**
+     *Method to get address details
+     * @param  Address $addressId,Request $request
+     * @return json $response
+     */
+    public function getAddressDetails(Address $addressId,Request $request) {
+        try {
+            $customer = Customer::where("customer_id", $request["customer_id"])->first();
+            if(!$customer) {
+                return response()->json(["message" => "Customer not found"], 404);
+            }
+            $address = Address::where("address_id", $addressId->address_id)->where("customer_id", $request["customer_id"])->first();
+            if($address) {
+                $response = array(
+                    "message" => "success",
+                    "status" => 200,
+                    "address" => $address->toArray()
+                );
+                return response()->json($response);
+            } else {
+                return response()->json(["message" => "Address not found"], 404);
+            }
+            
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     *Method to get all addresses
+     * @param Request $request
+     * @return json $response
+     */
+    public function fetchAllAddress(Request $request) {
+        try {
+            $addresses = Address::where("customer_id", $request["customer_id"])->get();
+            if($addresses) {
+                $response = array(
+                    "message" => "success",
+                    "status" => 200,
+                    "addresses" => $addresses->toArray()
+                );
+            } else {
+                return response()->json(["message" => "Address not found"], 404);
+            }
+            
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     *Method to delete address
+     * @param  Address $addressId,Request $request
+     * @return json $response
+     */
+    public function deleteAddress(Address $addressId,Request $request) {
+        try {
+            $customer = Customer::where("customer_id", $request["customer_id"])->first();
+            if(!$customer) {
+                return response()->json(["message" => "Customer not found"], 404);
+            }
+            $address = Address::where("address_id", $addressId->address_id)->where("customer_id", $request["customer_id"])->first();
+            if($address) {
+                $address->delete();
+                $response = array(
+                    "message" => "Address deleted successfully",
+                    "status" => 200,
+                );
+                return response()->json($response);
+            } else {
+                return response()->json(["message" => "Address not found"], 404);
+            }
+            
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

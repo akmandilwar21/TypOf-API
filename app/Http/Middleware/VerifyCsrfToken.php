@@ -20,6 +20,11 @@ class VerifyCsrfToken extends Middleware
         "/updateAddress",
         "/getCartDetails",
         "/getProductDetails",
-        "/fetchAllProduct"
+        "/fetchAllProduct",
+        "/fetchAllAddress",
+        "/deleteAddress/*",
+        "/checkUserExistence",
+        "/verifyOtp",
+        "/createUser",
     ];
 }
