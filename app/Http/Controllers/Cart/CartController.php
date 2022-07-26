@@ -169,10 +169,16 @@ class CartController extends Controller
 
             $cart = Cart::where("cid", $request["customer_id"])->first();
 
+            $cart = json_decode($cart->cart, true);
+            $array = [];
+            foreach($cart as $key => $value)
+            {
+                $array[] = $value;
+            }
             $response = array(
                 "message" => "sucsess",
                 "status" => 200,
-                "cart" => json_decode($cart->cart, true)
+                "cart" => $array
             );
             return response()->json($response);
         } catch (\Exception $e) {
