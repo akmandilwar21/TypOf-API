@@ -25,7 +25,11 @@ class CartController extends Controller
 
             $existingCart = Cart::where('cid', $request["customer_id"])->first();
             if($existingCart && array_key_exists($request["product_id"],json_decode($existingCart->cart, true))) {
-                return response()->json(["message" => "Product already in cart"], 200);
+                $cart = json_decode($existingCart->cart, true);
+                $cart[$request["product_id"]]["quantity"] += 1;
+                $cart = json_encode($cart);
+                Cart::where('cid', $request["customer_id"])->update(['cart'=> $cart]);
+                return response()->json(["message" => "Added to cart successfully"], 200);
             }
             $productDetailsJson = $this->productDetailsJsonFormat($product, $request);
             $matchThese = array("cid"=>$request["customer_id"]);
