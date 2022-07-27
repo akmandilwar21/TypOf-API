@@ -166,23 +166,38 @@ class CartController extends Controller
             if(!$customer) {
                 return response()->json(["message" => "Customer not found"], 404);
             }
-
+            $cartTotalAmount = 0;
+            $array = [];
             $cart = Cart::where("cid", $request["customer_id"])->first();
 
-            $cart = json_decode($cart->cart, true);
-            $array = [];
-            foreach($cart as $key => $value)
-            {
-                $array[] = $value;
+            if($cart) {
+                $cart = json_decode($cart->cart, true);
+            
+                foreach($cart as $key => $value)
+                {
+                    $array[] = $value;
+                    $cartTotalAmount = $cartTotalAmount + $this->getCartTotalAmount($value);
+                }
             }
             $response = array(
                 "message" => "sucsess",
                 "status" => 200,
-                "cart" => $array
+                "cart" => $array,
+                "cartTotalAmount" => $cartTotalAmount
             );
             return response()->json($response);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    /**
+     *Method to get cart total amount
+     * @param  Request $request
+     * @return json $response
+     */
+    public function getCartTotalAmount($cart) {
+        $singleProductAmount = $cart["quantity"] * $cart["price"];
+        return $singleProductAmount;
     }
 }
