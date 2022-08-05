@@ -40,3 +40,17 @@ Route::group(["middleware" => ["checkAuth"]],function () {
     //     // Uses first & second middleware...
     // });
 });
+
+
+// insert Product Api to Google Merchant Centre
+Route::post("/insertProductApi",[App\Http\Controllers\GoogleMerchantCenterController::class, "insertProductApi"]);
+// get Product List Api from Google Merchant Centre
+Route::get("/getProductListApi",[App\Http\Controllers\GoogleMerchantCenterController::class, "getProductListApi"])->name('getProductListApi');
+// get Product List Api from Google Merchant Centre
+Route::get("/getProductDetailsApi/{productId}",[App\Http\Controllers\GoogleMerchantCenterController::class, "getProductDetailsApi"]);
+// get Product List Api from Google Merchant Centre
+Route::post("/updateProductApi/{productId}",[App\Http\Controllers\GoogleMerchantCenterController::class, "updateProductApi"]);
+// delete Product Api from Google Merchant Centre
+Route::delete("/deleteProductApi/{productId}",[App\Http\Controllers\GoogleMerchantCenterController::class, "deleteProductApi"]);
+Route::get("/getAccessToken",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAccessToken"]);
+Route::get("/getAuthCode",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAuthCode"]);

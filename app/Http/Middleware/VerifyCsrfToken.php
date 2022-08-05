@@ -26,5 +26,8 @@ class VerifyCsrfToken extends Middleware
         "/checkUserExistence",
         "/verifyOtp",
         "/createUser",
+        "/insertProductApi",
+        "/updateProductApi/*",
+        "/deleteProductApi/*"
     ];
 }
