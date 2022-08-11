@@ -18,7 +18,7 @@ Route::get("/", function () {
     return view("welcome");
 });
 
-Route::group(["middleware" => ["checkAuth"]],function () {
+Route::group(["middleware" => ["checkAuth", "cors"]],function () {
     Route::post("/auth",[App\Http\Controllers\Admin\UserController::class, "index"]);
     Route::post("/checkUserExistence",[App\Http\Controllers\Admin\UserController::class, "checkUserExistence"]);
     Route::post("/verifyOtp",[App\Http\Controllers\Admin\UserController::class, "verifyOtp"]);
@@ -54,3 +54,5 @@ Route::post("/updateProductApi/{productId}",[App\Http\Controllers\GoogleMerchant
 Route::delete("/deleteProductApi/{productId}",[App\Http\Controllers\GoogleMerchantCenterController::class, "deleteProductApi"]);
 Route::get("/getAccessToken",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAccessToken"]);
 Route::get("/getAuthCode",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAuthCode"]);
+Route::get("/test",[App\Http\Controllers\FacebookPixelController::class, "test"]);
+Route::get("/Oauth",[App\Http\Controllers\FacebookPixelController::class, "Oauth"]);
