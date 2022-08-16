@@ -33,6 +33,7 @@ Route::group(["middleware" => ["checkAuth", "cors"]],function () {
     Route::get("/getAddressDetails/{addressId}",[App\Http\Controllers\Address\AddressController::class, "getAddressDetails"]);
     Route::get("/fetchAllAddress",[App\Http\Controllers\Address\AddressController::class, "fetchAllAddress"]);
     Route::delete("/deleteAddress/{addressId}",[App\Http\Controllers\Address\AddressController::class, "deleteAddress"]);
+    Route::post("/makeAddressDefault/{addressId}",[App\Http\Controllers\Address\AddressController::class, "makeAddressDefault"]);
 
     Route::get("/getProductDetails/{productId}",[App\Http\Controllers\Product\ProductController::class, "getProductDetails"]);
     Route::get("/fetchAllProduct",[App\Http\Controllers\Product\ProductController::class, "fetchAllProduct"]);
@@ -55,4 +56,7 @@ Route::delete("/deleteProductApi/{productId}",[App\Http\Controllers\GoogleMercha
 Route::get("/getAccessToken",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAccessToken"]);
 Route::get("/getAuthCode",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAuthCode"]);
 Route::get("/test",[App\Http\Controllers\FacebookPixelController::class, "test"]);
-Route::get("/Oauth",[App\Http\Controllers\FacebookPixelController::class, "Oauth"]);
+Route::get("/createProduct",[App\Http\Controllers\FacebookPixelController::class, "createProduct"]);
+Route::get("/deleteFacebookProduct",[App\Http\Controllers\FacebookPixelController::class, "deleteFacebookProduct"]);
+Route::get("/getFacebookProduct/{productId}",[App\Http\Controllers\FacebookPixelController::class, "getFacebookProduct"]);
+Route::get("/getProductList",[App\Http\Controllers\FacebookPixelController::class, "getProductList"]);

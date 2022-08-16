@@ -193,4 +193,33 @@ class AddressController extends Controller
             return $e->getMessage();
         }
     }
+
+     /**
+     *Method to make address default
+     * @param  Address $addressId,Request $request
+     * @return json $response
+     */
+    public function makeAddressDefault(Address $addressId,Request $request) {
+        try {
+            $customer = Customer::where("customer_id", $request["customer_id"])->first();
+            if(!$customer) {
+                return response()->json(["message" => "Customer not found"], 404);
+            }
+            $address = Address::where("address_id", $addressId->address_id)->where("customer_id", $request["customer_id"])->first();
+            if($address) {
+                Address::where('customer_id', $request["customer_id"])->update(['default_address'=>0]);
+                Address::where("address_id", $addressId->address_id)->where("customer_id", $request["customer_id"])->update(['default_address'=>1]);
+                $response = array(
+                    "message" => "Address made default successfully",
+                    "status" => 200,
+                );
+                return response()->json($response);
+            } else {
+                return response()->json(["message" => "Address not found"], 404);
+            }
+            
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }    
 }

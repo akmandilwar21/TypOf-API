@@ -28,6 +28,7 @@ class VerifyCsrfToken extends Middleware
         "/createUser",
         "/insertProductApi",
         "/updateProductApi/*",
-        "/deleteProductApi/*"
+        "/deleteProductApi/*",
+        "/makeAddressDefault/*"
     ];
 }
