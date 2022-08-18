@@ -42,7 +42,7 @@ class AddressController extends Controller
             $saveAddress->pin = $request["pin"];
             if($saveAddress->save()) {
                 Address::where('customer_id', $request["customer_id"])->first()->update(['default_address'=>0]);
-                Address::where("address_id",$saveAddress->id)->update(['default_address'=>1]);
+                Address::where("address_id",$saveAddress->address_id)->update(['default_address'=>1]);
                 Cart::where('cid', $request["customer_id"])->update(["checkout" => ['address'=>$saveAddress->id]]);
                 return response()->json(["message" => "Address added successfully."], 200);
             }else{

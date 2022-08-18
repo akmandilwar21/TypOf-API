@@ -57,6 +57,11 @@ Route::get("/getAccessToken",[App\Http\Controllers\GoogleMerchantCenterControlle
 Route::get("/getAuthCode",[App\Http\Controllers\GoogleMerchantCenterController::class, "getAuthCode"]);
 Route::get("/test",[App\Http\Controllers\FacebookPixelController::class, "test"]);
 Route::get("/createProduct",[App\Http\Controllers\FacebookPixelController::class, "createProduct"]);
-Route::get("/deleteFacebookProduct",[App\Http\Controllers\FacebookPixelController::class, "deleteFacebookProduct"]);
+
+//Below route for deleting catalogue and product in the catalogue
+Route::get("/deleteFacebookProduct/{productId}",[App\Http\Controllers\FacebookPixelController::class, "deleteFacebookProduct"]);
+//Below route to get catalogue and product details in the catalogue
 Route::get("/getFacebookProduct/{productId}",[App\Http\Controllers\FacebookPixelController::class, "getFacebookProduct"]);
 Route::get("/getProductList",[App\Http\Controllers\FacebookPixelController::class, "getProductList"]);
+Route::get("/createCatalogue",[App\Http\Controllers\FacebookPixelController::class, "createCatalogue"]);
+Route::get("/getCatalogueList",[App\Http\Controllers\FacebookPixelController::class, "getCatalogueList"]);
