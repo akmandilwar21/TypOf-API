@@ -221,5 +221,21 @@ class AddressController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         }
-    }    
+    }  
+    
+    /**
+     *Method to get city and state address based on pincode
+     * @param  Request $request
+     * @return json response;
+     */
+    public function getCityAndState(Request $request)
+    {
+        try {
+            $client = new Client();
+            $result = $client->get("http://www.postalpincode.in/api/pincode/".$request["pincode"]);
+            return json_decode($result->getBody());  
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

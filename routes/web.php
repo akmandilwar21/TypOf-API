@@ -34,6 +34,7 @@ Route::group(["middleware" => ["checkAuth", "cors"]],function () {
     Route::get("/fetchAllAddress",[App\Http\Controllers\Address\AddressController::class, "fetchAllAddress"]);
     Route::delete("/deleteAddress/{addressId}",[App\Http\Controllers\Address\AddressController::class, "deleteAddress"]);
     Route::post("/makeAddressDefault/{addressId}",[App\Http\Controllers\Address\AddressController::class, "makeAddressDefault"]);
+    Route::get("/getCityAndState",[App\Http\Controllers\Address\AddressController::class, "getCityAndState"]);
 
     Route::get("/getProductDetails/{productId}",[App\Http\Controllers\Product\ProductController::class, "getProductDetails"]);
     Route::get("/fetchAllProduct",[App\Http\Controllers\Product\ProductController::class, "fetchAllProduct"]);
@@ -65,3 +66,8 @@ Route::get("/getFacebookProduct/{productId}",[App\Http\Controllers\FacebookPixel
 Route::get("/getProductList",[App\Http\Controllers\FacebookPixelController::class, "getProductList"]);
 Route::get("/createCatalogue",[App\Http\Controllers\FacebookPixelController::class, "createCatalogue"]);
 Route::get("/getCatalogueList",[App\Http\Controllers\FacebookPixelController::class, "getCatalogueList"]);
+
+//Phonepe
+Route::get("/testPaytm",[App\Http\Controllers\Paytm\PaytmController::class, "testPaytm"]);
+Route::get("/pay",[App\Http\Controllers\Paytm\PaytmController::class, "pay"]);
+Route::get("/testPhonePe",[App\Http\Controllers\Paytm\PaytmController::class, "testPhonePe"]);
