@@ -41,8 +41,10 @@ class AddressController extends Controller
             $saveAddress->country = $request["country"];
             $saveAddress->pin = $request["pin"];
             if($saveAddress->save()) {
-                Address::where('customer_id', $request["customer_id"])->update(['default_address'=>0]);
-                Address::where("address_id",$saveAddress->address_id)->update(['default_address'=>1]);
+                if($request["default"] == 1) {
+                    Address::where('customer_id', $request["customer_id"])->update(['default_address'=>0]);
+                    Address::where("address_id",$saveAddress->address_id)->update(['default_address'=>1]);
+                }
                 Cart::where('cid', $request["customer_id"])->update(["checkout" => ['address'=>$saveAddress->id]]);
                 return response()->json(["message" => "Address added successfully."], 200);
             }else{
@@ -102,8 +104,10 @@ class AddressController extends Controller
             ]);
             
             if($saveAddress) {
-                Address::where('customer_id', $request["customer_id"])->first()->update(['default_address'=>0]);
-                Address::where("address_id",$request["address_id"])->update(['default_address'=>1]);
+                if($request["default"] == 1) {
+                    Address::where('customer_id', $request["customer_id"])->update(['default_address'=>0]);
+                    Address::where("address_id",$request["address_id"])->update(['default_address'=>1]);
+                }
                 Cart::where('cid', $request["customer_id"])->update(["checkout" => ['address'=>$request["address_id"]]]);
                 return response()->json(["message" => "Address updated successfully."], 200);
             }else{
