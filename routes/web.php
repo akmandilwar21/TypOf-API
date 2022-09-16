@@ -41,6 +41,10 @@ Route::group(["middleware" => ["checkAuth", "cors"]],function () {
     // Route::get("/user/profile", function () {
     //     // Uses first & second middleware...
     // });
+
+    Route::get("/getChatUsersLists",[App\Http\Controllers\WhatsappController::class, "getChatUsersLists"]);
+    Route::get("/getUsersListsForNewChat",[App\Http\Controllers\WhatsappController::class, "getUsersListsForNewChat"]);
+    Route::get("/getUserChatHistory",[App\Http\Controllers\WhatsappController::class, "getUserChatHistory"]);
 });
 
 
@@ -71,3 +75,7 @@ Route::get("/getCatalogueList",[App\Http\Controllers\FacebookPixelController::cl
 Route::get("/testPaytm",[App\Http\Controllers\Paytm\PaytmController::class, "testPaytm"]);
 Route::get("/pay",[App\Http\Controllers\Paytm\PaytmController::class, "pay"]);
 Route::get("/testPhonePe",[App\Http\Controllers\Paytm\PaytmController::class, "testPhonePe"]);
+
+
+Route::get("/testWhatspp",[App\Http\Controllers\WhatsappController::class, "testWhatspp"]);
+
