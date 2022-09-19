@@ -120,7 +120,7 @@ class WhatsappController extends Controller
             $userChatHistory = UserChatHistory::where("store_id" ,env("STORE_ID"))
                                 ->where('customer_id', $request["customer_id"])
                                 ->orderBy('created_at', 'desc')
-                                ->get();
+                                ->paginate($request["limit"]);
             if($userChatHistory) {
                 $response = array(
                     "message" => "success",
