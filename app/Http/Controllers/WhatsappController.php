@@ -117,7 +117,7 @@ class WhatsappController extends Controller
      */
     public function getUserChatHistory(Request $request) {
         try {
-            $userChatHistory = UserChatHistory::where("store_id" ,env("STORE_ID"))
+            $userChatHistory = UserChatHistory::where("store_id" ,$request["store_id"])
                                 ->where('customer_id', $request["customer_id"])
                                 ->orderBy('created_at', 'desc')
                                 ->paginate($request["limit"]);
