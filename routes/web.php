@@ -42,9 +42,12 @@ Route::group(["middleware" => ["checkAuth", "cors"]],function () {
     //     // Uses first & second middleware...
     // });
 
+    // Whatsapp Api's
     Route::get("/getChatUsersLists",[App\Http\Controllers\WhatsappController::class, "getChatUsersLists"]);
     Route::get("/getUsersListsForNewChat",[App\Http\Controllers\WhatsappController::class, "getUsersListsForNewChat"]);
     Route::get("/getUserChatHistory",[App\Http\Controllers\WhatsappController::class, "getUserChatHistory"]);
+    Route::get("/getWhatsappTemplates",[App\Http\Controllers\WhatsappController::class, "getWhatsappTemplates"]);
+    Route::post("/sendMessage",[App\Http\Controllers\WhatsappController::class, "sendMessage"]);
 });
 
 
@@ -76,6 +79,6 @@ Route::get("/testPaytm",[App\Http\Controllers\Paytm\PaytmController::class, "tes
 Route::get("/pay",[App\Http\Controllers\Paytm\PaytmController::class, "pay"]);
 Route::get("/testPhonePe",[App\Http\Controllers\Paytm\PaytmController::class, "testPhonePe"]);
 
-
-Route::get("/testWhatspp",[App\Http\Controllers\WhatsappController::class, "testWhatspp"]);
+Route::get("/webhook",[App\Http\Controllers\WhatsappController::class, "whatsappWebhook"]);
+Route::post("/webhook",[App\Http\Controllers\WhatsappController::class, "whatsappWebhookAfter"]);
 

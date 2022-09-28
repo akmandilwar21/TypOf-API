@@ -6,49 +6,79 @@ use Illuminate\Http\Request;
 use App\Models\UserChatHistory;
 use App\Models\ChatUsersLists;
 use App\Models\Customer;
+use App\Models\WhatsappTemplates;
+use Log;
 
 class WhatsappController extends Controller
 {
-    public function testWhatspp(Request $request) 
+    public function sendMessage(Request $request) 
     {
-        // $token = "gIHlGz584kwdpHCh";
-        // $url = "https://api.chat-api.com/instance451649/sendMessage?token=".$token;
-        $token = "EAAEozB15ZCF8BAJgz6B1ARXFrxgEHSykiC3H6UH358uThNqMwKieEx0X3oZBkVZC5qJOSE9CrwxawIZCbCDvvZBbSFKoxVNCGVYKlXr3bhVwkImzfqqqtBVJ6B7hEZBarmY6hHcYde5CihutrXtrSDYY0cV1ZC2cQKaCZCNDeBH1VpjZCkBBma5EsqFTDfuBFrZBGTEzn9ohKZBdWJBoC2vGulWZAZBZA7NVJThFkZD";
-        $url = "https://graph.facebook.com/v14.0/103470409071258/messages";
-        $ch = curl_init();
-        $headers = array(
-            'Authorization: Bearer '.$token,
-            'Content-Type: application/json', 
-        );
-        $data = [
-            'messaging_product' => "whatsapp",
-            "recipient_type" => "individual",
-            'to' => "916200244082",
-            'type' => "text",
-            'text' => [
-                "preview_url" => false,
-                "body" => "Hello World"
-            ],
-        ];
-        $body = json_encode($data);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        $data = curl_exec($ch);
+        try {
+            $token = "EAAEozB15ZCF8BAEZCq1ATCgvVMbyPE4okJvGZBcN3qKjwft7vKe8dNLNpwmI4ntjYmE9qZACwAA3qzLnRiHj9lNF7SpVyAXBiU3VIIk72LXuM6iMZBlNZBRe3ttKyyO0poWMj1DjOdJsPz2ZCRoZCvq9dReOZCw0ffSFsRHd6aSTfrgsyXqrKnL9hyUuBbmuQv95rGA0pwCpJMFrZBtRgYpVEjfuIUH35mCNEZD";
+            $url = "https://graph.facebook.com/v14.0/103470409071258/messages";
+            $ch = curl_init();
+            $headers = array(
+                'Authorization: Bearer '.$token,
+                'Content-Type: application/json', 
+            );
 
-        UserChatHistory::where("customer_id",$request["customer_id"])->update(['last_message'=>0]);
-        $saveChatHistory=new UserChatHistory;
-        $saveChatHistory->store_id = env("STORE_ID");
-        $saveChatHistory->customer_id = $request["customer_id"];
-        $saveChatHistory->customer_mobile = $request["customer_mobile"];
-        $saveChatHistory->message = $request["message"];
-        $saveChatHistory->last_message = 1;
-        $saveChatHistory->sender = "store";
-        $saveChatHistory->recipient = "customer";
-        $saveChatHistory->save();
-        return response()->json("Success");
+            $data = [
+                'messaging_product' => "whatsapp",
+                'to' => "91".$request["customer_mobile"],
+            ];
+            if($request["user_type"] == "new_user") {
+                $data['type'] = "template";
+                $data["template"]["name"] = $request["template_name"];
+                $data["template"]["language"]["code"] = "en_US";
+            } elseif($request["user_type"] == "existing_user") {
+                $data["recipient_type"] = "individual";
+                $data["type"] = "text";
+                $data["text"] = [
+                    "preview_url" => false,
+                    "body" => $request["message"]
+                ];
+            }
+            $body = json_encode($data);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $data = curl_exec($ch);
+            $data = json_decode($data);
+            
+            if($data) {
+                $message = $request["message"];
+                $customerId = Customer::where("mobile", $request["customer_mobile"])->first()->toArray();
+                if($request["user_type"] == "new_user") {
+                    $messageTemplate = WhatsappTemplates::where("store_id" ,$request["store_id"])->where("template_name",$request["template_name"])->first()->toArray();
+                    $message = $messageTemplate["template_body"];
+                    $chatUserListInsert = ChatUsersLists::insert(["store_id" => $request["store_id"],
+                                                    "customer_id" => $customerId['customer_id'],
+                                                    "customer_mobile" => $request["customer_mobile"],
+                                                    "last_message" => $message]);
+                }
+                UserChatHistory::where("customer_id",$customerId['customer_id'])->update(['last_message'=>0]);
+                $saveChatHistory=new UserChatHistory;
+                $saveChatHistory->store_id = env("STORE_ID");
+                $saveChatHistory->customer_id = $customerId['customer_id'];
+                $saveChatHistory->customer_mobile = $request["customer_mobile"];
+                $saveChatHistory->message = $message;
+                $saveChatHistory->last_message = 1;
+                $saveChatHistory->sender = "store";
+                $saveChatHistory->recipient = "customer";
+                $saveChatHistory->whatsapp_chat_id = $data->messages[0]->id;
+                $saveChatHistory->save();
+                $response = array(
+                    "message" => "success",
+                    "status" => 200,
+                );
+                return response()->json($response);
+            }  
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -130,6 +160,61 @@ class WhatsappController extends Controller
                 return response()->json($response);
             } else {
                 return response()->json(["message" => "No Users found"], 404);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function whatsappWebhook(Request $request)
+    {
+        if($request["hub_verify_token"] == env("WHATSAPP_TOKEN"))
+        {
+            return $request["hub_challenge"];
+        }
+    }
+
+    public function whatsappWebhookAfter(Request $request) {
+        try {
+            if($request["entry"][0]["changes"][0]["value"]["messages"]) {
+                $message = $request["entry"][0]["changes"][0]["value"]["messages"];
+                // Log::info($request["entry"][0]["changes"][0]["value"]["messages"]);
+                $customerId = Customer::where("mobile", substr($message[0]["from"],2))->first()->toArray();
+                // Log::info($customerId);
+                UserChatHistory::where("customer_id",$customerId['customer_id'])->update(['last_message'=>0]);
+                $saveChatHistory=new UserChatHistory;
+                $saveChatHistory->store_id = env("STORE_ID");
+                $saveChatHistory->customer_id = $customerId['customer_id'];
+                $saveChatHistory->customer_mobile = $message[0]["from"];
+                $saveChatHistory->message = $message[0]["text"]["body"];
+                $saveChatHistory->last_message = 1;
+                $saveChatHistory->sender = "customer";
+                $saveChatHistory->recipient = "store";
+                $saveChatHistory->whatsapp_chat_id = $message[0]["id"];
+                $saveChatHistory->save();
+
+                $response = array(
+                    "status" => 200
+                );
+                return response()->json($response);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function getWhatsappTemplates(Request $request) {
+        try {
+            $whatsappTemplates = WhatsappTemplates::where("store_id" ,$request["store_id"])->get();
+            if($whatsappTemplates) {
+                $response = array(
+                    "message" => "success",
+                    "status" => 200,
+                    "whatsappTemplates" => $whatsappTemplates->toArray()
+                );
+                return response()->json($response);
+            } else {
+                return response()->json(["message" => "No Templates found for this store"], 404);
             }
         } catch (\Exception $e) {
             return $e->getMessage();
