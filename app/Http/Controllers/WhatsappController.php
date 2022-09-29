@@ -147,15 +147,24 @@ class WhatsappController extends Controller
      */
     public function getUserChatHistory(Request $request) {
         try {
-            $userChatHistory = UserChatHistory::where("store_id" ,$request["store_id"])
-                                ->where('customer_id', $request["customer_id"])
-                                ->orderBy('created_at', 'desc')
-                                ->paginate($request["limit"]);
-            if($userChatHistory) {
+            $userType = "new_user";
+            $userChat = UserChatHistory::where("store_id" ,$request["store_id"])
+                                ->where('customer_id', $request["customer_id"]);
+            
+            
+            $userChatHistory = $userChat->orderBy('created_at', 'desc')
+                                ->paginate($request["limit"])->toArray();
+            
+            $chatUserType = $userChat->where("sender", "customer")->count();
+            if($chatUserType) {
+                $userType = "existing_user";
+            }
+            $userChatHistory["user_type"] = $userType;
+            if($userChat) {
                 $response = array(
                     "message" => "success",
                     "status" => 200,
-                    "userChatHistory" => $userChatHistory->toArray()
+                    "userChatHistory" => $userChatHistory
                 );
                 return response()->json($response);
             } else {
