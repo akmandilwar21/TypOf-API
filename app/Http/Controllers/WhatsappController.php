@@ -14,7 +14,7 @@ class WhatsappController extends Controller
     public function sendMessage(Request $request) 
     {
         try {
-            $token = "EAAEozB15ZCF8BAEZCq1ATCgvVMbyPE4okJvGZBcN3qKjwft7vKe8dNLNpwmI4ntjYmE9qZACwAA3qzLnRiHj9lNF7SpVyAXBiU3VIIk72LXuM6iMZBlNZBRe3ttKyyO0poWMj1DjOdJsPz2ZCRoZCvq9dReOZCw0ffSFsRHd6aSTfrgsyXqrKnL9hyUuBbmuQv95rGA0pwCpJMFrZBtRgYpVEjfuIUH35mCNEZD";
+            $token = env("WHATSAPP_API_KEY");
             $url = "https://graph.facebook.com/v14.0/103470409071258/messages";
             $ch = curl_init();
             $headers = array(
@@ -61,7 +61,7 @@ class WhatsappController extends Controller
                 }
                 UserChatHistory::where("customer_id",$customerId['customer_id'])->update(['last_message'=>0]);
                 $saveChatHistory=new UserChatHistory;
-                $saveChatHistory->store_id = env("STORE_ID");
+                $saveChatHistory->store_id = $requset["store_id"];
                 $saveChatHistory->customer_id = $customerId['customer_id'];
                 $saveChatHistory->customer_mobile = $request["customer_mobile"];
                 $saveChatHistory->message = $message;
