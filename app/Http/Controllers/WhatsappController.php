@@ -61,7 +61,7 @@ class WhatsappController extends Controller
                 }
                 UserChatHistory::where("customer_id",$customerId['customer_id'])->update(['last_message'=>0]);
                 $saveChatHistory=new UserChatHistory;
-                $saveChatHistory->store_id = $requset["store_id"];
+                $saveChatHistory->store_id = $request["store_id"];
                 $saveChatHistory->customer_id = $customerId['customer_id'];
                 $saveChatHistory->customer_mobile = $request["customer_mobile"];
                 $saveChatHistory->message = $message;
