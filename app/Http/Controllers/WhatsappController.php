@@ -51,14 +51,20 @@ class WhatsappController extends Controller
             if($data) {
                 $message = $request["message"];
                 $customerId = Customer::where("mobile", $request["customer_mobile"])->first()->toArray();
+                $chatUserListCount = ChatUsersLists::where('customer_id', $customerId['customer_id'])->count();
                 if($request["user_type"] == "new_user") {
                     $messageTemplate = WhatsappTemplates::where("store_id" ,$request["store_id"])->where("template_name",$request["template_name"])->first()->toArray();
                     $message = $messageTemplate["template_body"];
-                    $chatUserListInsert = ChatUsersLists::insert(["store_id" => $request["store_id"],
+                    if($chatUserListCount == 0)
+                    {
+                        $chatUserListInsert = ChatUsersLists::insert(["store_id" => $request["store_id"],
                                                     "customer_id" => $customerId['customer_id'],
                                                     "customer_mobile" => $request["customer_mobile"],
                                                     "last_message" => $message]);
+                    }
                 }
+                $newtimestamp = strtotime(date('Y-m-d h:i:s').' + 330 minute');
+                $created_at = date('Y-m-d H:i:s', $newtimestamp);
                 UserChatHistory::where("customer_id",$customerId['customer_id'])->update(['last_message'=>0]);
                 $saveChatHistory=new UserChatHistory;
                 $saveChatHistory->store_id = $request["store_id"];
@@ -69,6 +75,7 @@ class WhatsappController extends Controller
                 $saveChatHistory->sender = "store";
                 $saveChatHistory->recipient = "customer";
                 $saveChatHistory->whatsapp_chat_id = $data->messages[0]->id;
+                $saveChatHistory->created_at = $created_at;
                 $saveChatHistory->save();
                 $response = array(
                     "message" => "success",
